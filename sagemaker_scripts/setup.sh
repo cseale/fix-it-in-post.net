@@ -1,14 +1,22 @@
-# load important libaries
+#!/bin/bash
+sudo -u ec2-user -i << 'EOF'
 
-# activate pytorch
+# Lifecycle Configuration for Notebook Instance
+export WORKING_DIR="/home/ec2-user/SageMaker/fix-it-in-post.net"
+
+# use bash
+export SHELL="/bin/bash"
+
+# use pytorch environment
 source activate pytorch_p36
 
-# automate this activation to work everytime you open a terminal
-echo 'source activate pytorch_p36' >> ~/.bashrc 
-
 # install tensorflow
-# conda install --yes tensorflow
+pip install tensorflow
 
 # install tensorboard 
-# conda install --yes tensorboard
-conda install -y -c conda-forge tensorboardx 
+pip install tensorboard
+pip install tensorboardx 
+
+# automate this activation to work everytime you open a terminal
+echo "source activate pytorch_p36" >> ~/.bashrc 
+echo "cd $WORKING_DIR" >> ~/.bashrc 
