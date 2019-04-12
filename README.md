@@ -1,9 +1,3 @@
 # fix-it-in-post.net
-fix-it-in-post.net
 
-# Developer requirements
-
-- Python 3.6+
-- Docker
-- AWS CLI
-- 
+Project based of this template: https://github.com/victoresque/pytorch-template#pytorch-template-project
