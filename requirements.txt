@@ -1,5 +1,10 @@
+numpy
+matplotlib
+librosa
+scipy
 pytorch
 tqdm
 tensorflow
 tensorboard
 tensorboardx
+progressbar2
