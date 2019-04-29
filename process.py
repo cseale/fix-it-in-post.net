@@ -27,8 +27,8 @@ def get_stft(y, sr):
     return D
 
 def process_audio(process_all = False):
-    raw_dir = "../data/raw/edinburgh-noisy-speech-db/"
-    processed_dir = "../data/processed/edinburgh-noisy-speech-db/"
+    raw_dir = "./data/raw/edinburgh-noisy-speech-db/"
+    processed_dir = "./data/processed/edinburgh-noisy-speech-db/"
     clean_audio_dir = "clean_trainset_28spk_wav/"
     noisy_audio_dir = "noisy_trainset_28spk_wav/"
     log_trainset = "log_trainset_28spk.txt"
@@ -66,7 +66,9 @@ def process_audio(process_all = False):
                     else:
                         dataset["targets"].append(magnitude[:,segment_index + num_segments])
             bar.update(i)
-            
+    
+    dataset["predictors"] = np.array(dataset["predictors"])
+    dataset["targets"] = np.array(dataset["targets"])
     with open(processed_dir + "train.pkl", 'wb') as handle:
         pickle.dump(dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
     print("processing finished")        
