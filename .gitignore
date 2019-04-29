@@ -4,3 +4,6 @@
 # edinburgh noisy speech database
 data/raw/**
 data/processed/**
+
+
+.idea/
