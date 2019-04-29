@@ -19,7 +19,8 @@ def main(config):
     print("--------INSPECTING ELEMENTS OF DATA LOADER------")
     for batch_idx, (data, target) in enumerate(data_loader):
         if(batch_idx == 1):
-            print("Target label", target[0:])
+            print("Size of predictors", data.data.numpy().shape)
+            print("Size of target", target.data.numpy().shape)
             break
 
 
