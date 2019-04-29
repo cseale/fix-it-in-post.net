@@ -34,6 +34,7 @@ class ConvolutionalBaseline(BaseModel):
         self.fc2 = nn.Linear(1024, n_features)
 
     def forward(self, x):
+        x = x.reshape(x.shape[0], 1, self.n_features, -1)
         x = F.relu(self.conv1_bn(self.conv1(x)))
         x = F.relu(self.conv2_bn(self.conv2(x)))
         x = F.relu(self.conv3_bn(self.conv3(x)))
