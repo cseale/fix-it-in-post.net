@@ -69,6 +69,10 @@ def process_audio(process_all = False):
     
     dataset["predictors"] = np.array(dataset["predictors"])
     dataset["targets"] = np.array(dataset["targets"])
+
+    if not os.path.exists(processed_dir):
+        os.makedirs(processed_dir)
+
     with open(processed_dir + "train.pkl", 'wb') as handle:
         pickle.dump(dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
     print("processing finished")        
