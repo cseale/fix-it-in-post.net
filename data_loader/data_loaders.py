@@ -1,5 +1,6 @@
 from torchvision import datasets, transforms
 from base import BaseDataLoader
+import torch
 import pickle
 from torch.utils.data.dataset import Dataset  # For custom datasets
 import os 
@@ -26,13 +27,15 @@ class EdinburghDataset(Dataset):
         with open(self.dir_path + file_name, 'rb') as f:
             d = pickle.load(f)
 
-        self.labels = d["targets"]
-        self.attributes = d["predictors"]
-        
-        print(self.attributes.shape)
+        # TODO: use transformer
+        self.labels = torch.from_numpy(d["targets"])
+        self.data = torch.from_numpy(d["predictors"])
+        self.data = self.data.view(self.data.shape[0], -1)
+        print("Label dimensions" + str(self.labels.shape))
+        print("Data dimensions" + str(self.data.shape))
 
     def __getitem__(self, index):
-        return self.attributes[index], self.labels[index]
+        return self.data[index], self.labels[index]
 
     def __len__(self):
         return len(self.labels)
