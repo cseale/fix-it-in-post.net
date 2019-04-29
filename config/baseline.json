@@ -3,13 +3,16 @@
     "n_gpu": 1,
     
     "arch": {
-        "type": "BaselineModel",
-        "args": {}
+        "type": "FullyConnectedBaseline",
+        "args": {
+            "n_features": 129,
+            "n_segments": 8
+        }
     },
     "data_loader": {
         "type": "STFTDataLoader",
         "args":{
-            "data_dir": "data/",
+            "data_dir": "data/processed/edinburgh-noisy-speech-db/train.pkl",
             "batch_size": 128,
             "shuffle": true,
             "validation_split": 0.1,
@@ -25,9 +28,7 @@
         }
     },
     "loss": "squared_loss",
-    "metrics": [
-        "my_metric", "my_metric2"
-    ],
+    "metrics": [],
     "lr_scheduler": {
         "type": "StepLR",
         "args": {
