@@ -10,3 +10,4 @@ data/processed/**
 
 
 .idea/
+__pycache__/
