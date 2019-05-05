@@ -4,6 +4,7 @@ import scipy
 import numpy as np
 import progressbar
 import pickle
+import sys
 
 def get_stft(y, sr):
     # define vars
@@ -29,8 +30,8 @@ def get_stft(y, sr):
 def process_audio(process_all = False):
     raw_dir = "./data/raw/edinburgh-noisy-speech-db/"
     processed_dir = "./data/processed/edinburgh-noisy-speech-db/"
+    processed_filename = "train.pkl"
     clean_audio_dir = "clean_trainset_28spk_wav/"
-    noisy_audio_dir = "noisy_trainset_28spk_wav/"
     log_trainset = "log_trainset_28spk.txt"
     audio_files = []
     
@@ -50,18 +51,24 @@ def process_audio(process_all = False):
     
     if process_all == False:
         audio_files = audio_files[0:128]
+        processed_filename = "train.128.pkl"
         
     print("Processing " + str(len(audio_files)) + " files")
     
     with progressbar.ProgressBar(max_value=len(audio_files)) as bar:
         for i, f in enumerate(audio_files):
-            for a in [clean_audio_dir, noisy_audio_dir]:
-                y, sr = librosa.load(raw_dir + a + f)
+            for a in ["clean", "noisy"]:
+                y, sr = librosa.load(raw_dir + clean_audio_dir + f)
+                
+                if a == "noisy":
+                    noise_amp = 0.15*np.random.uniform()*np.amax(y)
+                    y = y.astype('float64') + noise_amp * np.random.normal(size=y.shape[0])
+                
                 D = get_stft(y, sr)
                 magnitude = np.abs(D)
                 
                 for segment_index in range(magnitude.shape[1] - num_segments):
-                    if a == noisy_audio_dir:
+                    if a == "noisy":
                         dataset["predictors"].append(magnitude[:, segment_index:segment_index + num_segments])
                     else:
                         dataset["targets"].append(magnitude[:,segment_index + num_segments])
@@ -73,10 +80,16 @@ def process_audio(process_all = False):
     if not os.path.exists(processed_dir):
         os.makedirs(processed_dir)
 
-    with open(processed_dir + "train.pkl", 'wb') as handle:
+    with open(processed_dir + processed_filename, 'wb') as handle:
         pickle.dump(dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
     print("processing finished")        
     
     return dataset
-            
-processed_dataset = process_audio()
+     
+process_all = False
+try:
+    process_all = sys.argv[1] == "all"
+except:
+    process_all = False
+    
+process_audio(process_all = process_all)
