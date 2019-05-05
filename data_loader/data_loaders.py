@@ -1,6 +1,8 @@
 from base import BaseDataLoader
 import torch
 import pickle
+import boto3
+import getpass
 from torch.utils.data.dataset import Dataset  # For custom datasets
 
 class STFTDataLoader(BaseDataLoader):
@@ -18,9 +20,11 @@ class STFTDataLoader(BaseDataLoader):
 
 class EdinburghDataset(Dataset):
 
-    def __init__(self, data_dir):
-        with open(data_dir, 'rb') as f:
-            d = pickle.load(f)
+    def __init__(self, data_dir): 
+        if getpass.getuser() == "ec2-user":
+            d = downloadS3File()
+        else:
+            d = useLocalFile()
 
         # TODO: use transformer
         self.labels = torch.from_numpy(d["targets"])
@@ -34,3 +38,18 @@ class EdinburghDataset(Dataset):
 
     def __len__(self):
         return len(self.labels)
+
+
+def useLocalFile():
+    data_dir = "./data/processed/edinburgh-noisy-speech-db/train.pkl"
+    with open(data_dir, 'rb') as f:
+        d = pickle.load(f)
+    return d
+
+def downloadS3File():
+    s3 = boto3.resource('s3')
+    bucket = s3.Bucket('fix-it-in-post')
+    obj = bucket.Object('train.128')
+    d = obj.get().get('Body').read()
+    d = pickle.loads(d)
+    return d
