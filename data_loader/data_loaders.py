@@ -25,7 +25,12 @@ class EdinburghDataset(Dataset):
 
     def __init__(self, window_length, overlap, sampling_rate, num_segments): 
         self.data_dir = get_directory_name(window_length, overlap, sampling_rate, num_segments)
-        # check if dir exists
+        
+        # keep track of data being loaded
+        self.loaded_indices = []
+        self.loaded_count = 0
+        
+        # check if the correct data exists locally, or on s3. If neither, generate either
         self.use_s3 = False
         if checkIfDataExistsOnLocal(self.data_dir):
             print("data is already processed...")
@@ -36,18 +41,21 @@ class EdinburghDataset(Dataset):
             print("no data, processing locally...")
             process_audio(process_all=False, window_length = window_length, overlap = overlap, sampling_rate = sampling_rate, num_segments = num_segments)
 
+        # read the amount of samples we have
         self.length = readLengthFile(self.data_dir, self.use_s3)
-        num_features = (window_length/2) + 1
+        num_features = int((window_length/2) + 1)
         self.data = torch.zeros([self.length, num_features * num_segments])
         self.labels = torch.zeros([self.length, num_features])
 
     def __getitem__(self, index):
-        # TODO: should check for zeros
-        d = readSampleFile(self.data_dir, index, self.use_s3)
-        self.data[index] = torch.from_numpy(d['predictors']).reshape(1, -1)
-        self.labels[index] = torch.from_numpy(d['targets'])
+        # If all files have not been loaded, and the index being queried has not been loaded, then load the file
+        if self.loaded_count != self.length and index not in self.loaded_indices:
+            d = readSampleFile(self.data_dir, index, self.use_s3)
+            self.data[index] = torch.from_numpy(d['predictors']).reshape(1, -1)
+            self.labels[index] = torch.from_numpy(d['targets'])
+            self.loaded_indices.append(index)
+            self.loaded_count = self.loaded_count + 1
 
-        print(self.data[index])
         return self.data[index], self.labels[index]
 
     def __len__(self):

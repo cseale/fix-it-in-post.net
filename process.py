@@ -69,10 +69,6 @@ def process_audio(process_all = False, window_length = 256, overlap = 0.75, samp
         
     print("Processing " + str(len(audio_files)) + " files")
     print("Storing in " + processed_dir)
-    # write number of files to info file
-    f= open(processed_dir + "info","w+")
-    f.write(str(audio_files_count))
-    f.close()
     
     with progressbar.ProgressBar(max_value=len(audio_files)) as bar:
         file_index = 0
@@ -102,6 +98,19 @@ def process_audio(process_all = False, window_length = 256, overlap = 0.75, samp
 
             bar.update(i)
     
+        # write number of files to info file
+        f= open(processed_dir + "info","w+")
+        f.write(str(file_index - 1))
+        f.close()
     print("processing finished")        
     
     return dataset
+
+if __name__ == "__main__":
+    process_all = False
+    try:
+        process_all = sys.argv[1] == "all"
+    except:
+        process_all = False
+
+    process_audio(process_all = process_all)
