@@ -79,7 +79,6 @@ def as_percent(num, denom):
     return float(num) / float(denom) * 100.0
 
 def main():
-    args = parse_args()
     mpu = S3MultipartUpload(
       "fix-it-in-post",
       "train",
