@@ -39,7 +39,7 @@ class EdinburghDataset(Dataset):
             print("data is on S3")
         else:
             print("no data, processing locally...")
-            process_audio(process_all=False, window_length = window_length, overlap = overlap, sampling_rate = sampling_rate, num_segments = num_segments)
+            process_audio(process_all=True, window_length = window_length, overlap = overlap, sampling_rate = sampling_rate, num_segments = num_segments)
 
         # read the amount of samples we have
         self.length = readLengthFile(self.data_dir, self.use_s3)

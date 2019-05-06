@@ -7,7 +7,7 @@ import pickle
 import sys
 
 ALL_FILES = 8192
-MINI_FILES = 128
+MINI_FILES = 512
 
 def get_stft(y, orig_sr, window_length, overlap, target_sr):
     # define vars
