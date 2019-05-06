@@ -79,11 +79,10 @@ def as_percent(num, denom):
     return float(num) / float(denom) * 100.0
 
 def main():
-    args = parse_args()
     mpu = S3MultipartUpload(
       "fix-it-in-post",
       "train",
-      "./data/processed/edinburgh-noisy-speech-db/train.128.pkl",
+      "./data/processed/edinburgh-noisy-speech-db/train.pkl",
     profile_name=None,
     region_name="eu-west-1")
     # abort all multipart uploads for this bucket (optional, for starting over)
