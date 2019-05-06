@@ -26,20 +26,24 @@ class EdinburghDataset(Dataset):
     def __init__(self, window_length, overlap, sampling_rate, num_segments): 
         self.data_dir = get_directory_name(window_length, overlap, sampling_rate, num_segments)
         # check if dir exists
-        if checkIfDataExists(self.data_dir):
+        self.use_s3 = False
+        if checkIfDataExistsOnLocal(self.data_dir):
             print("data is already processed...")
+        elif checkIfDataExistsOnS3(self.data_dir) or getpass.getuser() == "ec2-user":
+            self.use_s3 = True
+            print("data is on S3")
         else:
-            print("processing data...")
+            print("no data, processing locally...")
             process_audio(process_all=False, window_length = window_length, overlap = overlap, sampling_rate = sampling_rate, num_segments = num_segments)
 
-        self.length = readLengthFile(self.data_dir)
+        self.length = readLengthFile(self.data_dir, self.use_s3)
         num_features = (window_length/2) + 1
         self.data = torch.zeros([self.length, num_features * num_segments])
         self.labels = torch.zeros([self.length, num_features])
 
     def __getitem__(self, index):
         # TODO: should check for zeros
-        d = readSampleFile(self.data_dir, index)
+        d = readSampleFile(self.data_dir, index, self.use_s3)
         self.data[index] = torch.from_numpy(d['predictors']).reshape(1, -1)
         self.labels[index] = torch.from_numpy(d['targets'])
 
@@ -50,16 +54,16 @@ class EdinburghDataset(Dataset):
         return len(self.labels)
 
 
-def readLengthFile(data_dir):
+def readLengthFile(data_dir, use_s3):
     info_filename = "info"
-    if getpass.getuser() == "ec2-user":
+    if use_s3:
         return int(downloadS3File(data_dir, info_filename))
     else:
         return int(readLocalFile(data_dir, info_filename))
 
-def readSampleFile(data_dir, index):
+def readSampleFile(data_dir, index, use_s3):
     filename = "sample." + str(index) + ".pkl"   
-    if getpass.getuser() == "ec2-user":
+    if use_s3:
         return pickle.loads(downloadS3File(data_dir, filename))
     else:
         return pickle.loads(readLocalFile(data_dir, filename))
@@ -77,15 +81,15 @@ def downloadS3File(data_dir, filename):
     d = obj.get().get('Body').read()
     return d
 
-def checkIfDataExists(data_dir):
-    if getpass.getuser() == "ec2-user":
-        s3 = boto3.resource('s3')
-        try:
-            s3.Object('fix-it-in-post', data_dir + 'sample.1.pkl').load()
-            return True
-        except botocore.exceptions.ClientError as e:
-            if e.response['Error']['Code'] == "404":
-                return False 
-    else:
-        data_dir = EDINBURGH_DATA_DIR + data_dir
-        return os.path.exists(data_dir)
+def checkIfDataExistsOnS3(data_dir):
+    s3 = boto3.resource('s3')
+    try:
+        s3.Object('fix-it-in-post', data_dir + 'sample.1.pkl').load()
+        return True
+    except botocore.exceptions.ClientError as e:
+        if e.response['Error']['Code'] == "404":
+            return False 
+
+def checkIfDataExistsOnLocal(data_dir):
+    data_dir = EDINBURGH_DATA_DIR + data_dir
+    return os.path.exists(data_dir)
