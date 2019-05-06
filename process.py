@@ -59,7 +59,6 @@ def process_audio(process_all = False, window_length = 256, overlap = 0.75, samp
         audio_files.append(x.split()[0] + ".wav")
     f.close()
     
-
     audio_files_count = ALL_FILES
     if process_all == False:
         audio_files_count = MINI_FILES
