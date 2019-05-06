@@ -2,8 +2,13 @@ from base import BaseDataLoader
 import torch
 import pickle
 import boto3
+import botocore
+import os
 import getpass
+from process import process_audio, get_directory_name 
 from torch.utils.data.dataset import Dataset  # For custom datasets
+
+EDINBURGH_DATA_DIR = "./data/processed/edinburgh-noisy-speech-db/"
 
 class STFTDataLoader(BaseDataLoader):
     """
@@ -11,47 +16,76 @@ class STFTDataLoader(BaseDataLoader):
 
     Load preprocessed data
     """
-    def __init__(self, data_dir, batch_size, shuffle=False, validation_split=0.0, num_workers=1):
-        self.data_dir = data_dir
-        self.dataset = EdinburghDataset(self.data_dir)
-
+    def __init__(self, batch_size, shuffle=False, validation_split=0.0, num_workers=1, window_length = 256, overlap = 0.75, sampling_rate = 8e3, num_segments = 8):
+        self.dataset = EdinburghDataset(window_length, overlap, sampling_rate, num_segments)
         super(STFTDataLoader, self).__init__(self.dataset, batch_size, shuffle, validation_split, num_workers)
 
 
 class EdinburghDataset(Dataset):
 
-    def __init__(self, data_dir): 
-        if getpass.getuser() == "ec2-user":
-            d = downloadS3File()
+    def __init__(self, window_length, overlap, sampling_rate, num_segments): 
+        self.data_dir = get_directory_name(window_length, overlap, sampling_rate, num_segments)
+        # check if dir exists
+        if checkIfDataExists(self.data_dir):
+            print("data is already processed...")
         else:
-            d = useLocalFile(data_dir)
+            print("processing data...")
+            process_audio(process_all=False, window_length = window_length, overlap = overlap, sampling_rate = sampling_rate, num_segments = num_segments)
 
-        # TODO: use transformer
-        self.labels = torch.from_numpy(d["targets"])
-        self.data = torch.from_numpy(d["predictors"])
-        self.data = self.data.view(self.data.shape[0], -1)
-        print(self.data.shape[0])
-        print("Label dimensions" + str(self.labels.shape))
-        print("Data dimensions" + str(self.data.shape))
+        self.length = readLengthFile(self.data_dir)
+        num_features = (window_length/2) + 1
+        self.data = torch.zeros([self.length, num_features * num_segments])
+        self.labels = torch.zeros([self.length, num_features])
 
     def __getitem__(self, index):
+        # TODO: should check for zeros
+        d = readSampleFile(self.data_dir, index)
+        self.data[index] = torch.from_numpy(d['predictors']).reshape(1, -1)
+        self.labels[index] = torch.from_numpy(d['targets'])
+
+        print(self.data[index])
         return self.data[index], self.labels[index]
 
     def __len__(self):
         return len(self.labels)
 
 
-def useLocalFile(data_dir):
-    # data_dir = "./data/processed/edinburgh-noisy-speech-db/train.512.pkl"
-    print(data_dir)
-    with open(data_dir, 'rb') as f:
-        d = pickle.load(f)
+def readLengthFile(data_dir):
+    info_filename = "info"
+    if getpass.getuser() == "ec2-user":
+        return int(downloadS3File(data_dir, info_filename))
+    else:
+        return int(readLocalFile(data_dir, info_filename))
+
+def readSampleFile(data_dir, index):
+    filename = "sample." + str(index) + ".pkl"   
+    if getpass.getuser() == "ec2-user":
+        return pickle.loads(downloadS3File(data_dir, filename))
+    else:
+        return pickle.loads(readLocalFile(data_dir, filename))
+
+def readLocalFile(data_dir, filename):
+    data_dir = EDINBURGH_DATA_DIR + data_dir
+    with open(data_dir + filename, 'rb') as f:
+        d = f.read()
     return d
 
-def downloadS3File():
+def downloadS3File(data_dir, filename):
     s3 = boto3.resource('s3')
     bucket = s3.Bucket('fix-it-in-post')
-    obj = bucket.Object('train.128')
+    obj = bucket.Object(data_dir + filename)
     d = obj.get().get('Body').read()
-    d = pickle.loads(d)
     return d
+
+def checkIfDataExists(data_dir):
+    if getpass.getuser() == "ec2-user":
+        s3 = boto3.resource('s3')
+        try:
+            s3.Object('fix-it-in-post', data_dir + 'sample.1.pkl').load()
+            return True
+        except botocore.exceptions.ClientError as e:
+            if e.response['Error']['Code'] == "404":
+                return False 
+    else:
+        data_dir = EDINBURGH_DATA_DIR + data_dir
+        return os.path.exists(data_dir)
