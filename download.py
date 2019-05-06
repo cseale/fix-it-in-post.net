@@ -28,24 +28,23 @@ def unzip(path, file):
         zip_ref.extractall(path)
         zip_ref.close()
         print("... data unzipped")
-    os.remove(file)
+    # os.remove(file)
     
 # download audio and text files
 print("creating directories...")
-path = DATA_DIR + FILENAME + "/"
-if not os.path.exists(DATA_DIR + FILENAME):
-    os.makedirs(DATA_DIR + FILENAME);
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR);
 
 print("downloading audio files...")
 f = urllib.request.urlretrieve(FILE_URL, DATA_DIR + FILENAME + ".zip", reporthook)
 print("...")
-print("unzipping " + str(t[0]) + " to " + path)
-unzip(path, f[0])
+print("unzipping " + str(f[0]) + " to " + DATA_DIR)
+unzip(DATA_DIR, f[0])
 
 print("downloading log files...")
 t = urllib.request.urlretrieve(LOGFILES_URL, DATA_DIR + LOGFILES + ".zip", reporthook)
 print("...")
-print("unzipping " + str(t[0]) + " to " + path)
+print("unzipping " + str(t[0]) + " to " + DATA_DIR)
 unzip(DATA_DIR, t[0])
 
 print("zip files deleted...")
