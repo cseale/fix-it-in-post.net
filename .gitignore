@@ -1,6 +1,19 @@
+# python stuff
 */__pycache__
 .ipynb_checkpoints
+*/.cache
+.cache
+
+# model runs
+saved/runs/
+**/checkpoint-epoch*
+
+
 
 # edinburgh noisy speech database
 data/raw/**
 data/processed/**
+
+# editor stuff
+.idea/
+__pycache__/

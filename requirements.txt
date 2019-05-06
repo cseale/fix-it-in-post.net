@@ -1,8 +1,9 @@
+boto3
 numpy
 matplotlib
 librosa
 scipy
-pytorch
+torch
 tqdm
 tensorflow
 tensorboard

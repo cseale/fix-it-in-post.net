@@ -10,12 +10,8 @@ export SHELL="/bin/bash"
 # use pytorch environment
 source activate pytorch_p36
 
-# install tensorflow
-pip install tensorflow
-
-# install tensorboard 
-pip install tensorboard
-pip install tensorboardx 
+# install all requirements
+pip install -r $WORKING_DIR/requirements.txt
 
 # automate this activation to work everytime you open a terminal
 echo "source activate pytorch_p36" >> ~/.bashrc 
