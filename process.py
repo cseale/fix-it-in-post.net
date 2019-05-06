@@ -8,12 +8,12 @@ import sys
 
 def get_stft(y, sr):
     # define vars
-    window_length = 256;
-    win = scipy.signal.hamming(window_length,"periodic");
-    overlap = round(0.75 * window_length);
-    fft_length = window_length;
+    window_length = 1024
+    win = scipy.signal.hamming(window_length,"periodic")
+    overlap = round(0.75 * window_length)
+    fft_length = window_length
     # downsampling
-    target_sr = 8e3;
+    target_sr = 8e3
     y = librosa.resample(y, target_sr = target_sr, orig_sr = sr)
     sr = target_sr
     # padding, because input must be multiple of fft window
@@ -50,8 +50,8 @@ def process_audio(process_all = False):
     f.close()
     
     if process_all == False:
-        audio_files = audio_files[0:128]
-        processed_filename = "train.128.pkl"
+        audio_files = audio_files[0:512]
+        processed_filename = "train.bla.pkl"
         
     print("Processing " + str(len(audio_files)) + " files")
     

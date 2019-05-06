@@ -30,6 +30,7 @@ class EdinburghDataset(Dataset):
         self.labels = torch.from_numpy(d["targets"])
         self.data = torch.from_numpy(d["predictors"])
         self.data = self.data.view(self.data.shape[0], -1)
+        print(self.data.shape[0])
         print("Label dimensions" + str(self.labels.shape))
         print("Data dimensions" + str(self.data.shape))
 
