@@ -6,14 +6,24 @@ import progressbar
 import pickle
 import sys
 
+
+WINDOW_LENGTH = 1024
+NUM_FEATURES = (WINDOW_LENGTH / 2) + 1
+NUM_SEGMENTS = 8
+OVERLAP = 0.75
+SAMPLING_RATE = 8e3
+
+ALL_FILES = 8192
+MINI_FILES = 128
+
 def get_stft(y, sr):
     # define vars
-    window_length = 1024
+    window_length = WINDOW_LENGTH
     win = scipy.signal.hamming(window_length,"periodic")
-    overlap = round(0.75 * window_length)
+    overlap = round(OVERLAP * window_length)
     fft_length = window_length
     # downsampling
-    target_sr = 8e3
+    target_sr = SAMPLING_RATE
     y = librosa.resample(y, target_sr = target_sr, orig_sr = sr)
     sr = target_sr
     # padding, because input must be multiple of fft window
@@ -29,19 +39,15 @@ def get_stft(y, sr):
 
 def process_audio(process_all = False):
     raw_dir = "./data/raw/edinburgh-noisy-speech-db/"
-    processed_dir = "./data/processed/edinburgh-noisy-speech-db/"
+    processed_dir = "./data/processed/edinburgh-noisy-speech-db/" + "w" + str(WINDOW_LENGTH) + "o" + str(OVERLAP) + "sr" + str(SAMPLING_RATE) + "/"
+    processed_dir = processed_dir.replace("0.", "").replace(".0", "")
     processed_filename = "train.pkl"
     clean_audio_dir = "clean_trainset_28spk_wav/"
     log_trainset = "log_trainset_28spk.txt"
     audio_files = []
     
-    num_features  = 129;
-    num_segments  = 8;
-
-    dataset = {
-        "predictors": [],
-        "targets": []
-    }
+    num_features  = NUM_FEATURES;
+    num_segments  = NUM_SEGMENTS;
     
     # list files
     f = open(raw_dir + log_trainset, "r")
@@ -50,15 +56,27 @@ def process_audio(process_all = False):
     f.close()
     
 
-    audio_files = audio_files[0:8192]
+    audio_files_count = ALL_FILES
     if process_all == False:
-        audio_files = audio_files[0:512]
-        processed_filename = "train.bla.pkl"
+        audio_files_count = MINI_FILES
+    audio_files = audio_files[0:audio_files_count]
+
+    if not os.path.exists(processed_dir):
+        os.makedirs(processed_dir)
         
     print("Processing " + str(len(audio_files)) + " files")
+    print("Storing in " + processed_dir)
+    # write number of files to info file
+    f= open(processed_dir + "info","w+")
+    f.write(str(audio_files_count))
+    f.close()
     
     with progressbar.ProgressBar(max_value=len(audio_files)) as bar:
         for i, f in enumerate(audio_files):
+            dataset = {
+                "predictors": [],
+                "targets": []
+            }
             for a in ["clean", "noisy"]:
                 y, sr = librosa.load(raw_dir + clean_audio_dir + f)
                 
@@ -74,16 +92,15 @@ def process_audio(process_all = False):
                         dataset["predictors"].append(magnitude[:, segment_index:segment_index + num_segments])
                     else:
                         dataset["targets"].append(magnitude[:,segment_index + num_segments])
+
+            dataset["predictors"] = np.array(dataset["predictors"])
+            dataset["targets"] = np.array(dataset["targets"])
+
+            with open(processed_dir + "sample." + str(i) + ".pkl", 'wb') as handle:
+                pickle.dump(dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
             bar.update(i)
     
-    dataset["predictors"] = np.array(dataset["predictors"])
-    dataset["targets"] = np.array(dataset["targets"])
-
-    if not os.path.exists(processed_dir):
-        os.makedirs(processed_dir)
-
-    with open(processed_dir + processed_filename, 'wb') as handle:
-        pickle.dump(dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
     print("processing finished")        
     
     return dataset
