@@ -43,7 +43,8 @@ def process_audio(process_all = False, window_length = 256, overlap = 0.75, samp
     print("num_segments = " + str(num_segments))
 
     raw_dir = "./data/raw/edinburgh-noisy-speech-db/"
-    processed_dir = "./data/processed/edinburgh-noisy-speech-db/" + get_directory_name(window_length, overlap, sampling_rate, num_segments)
+    directory_name = get_directory_name(window_length, overlap, sampling_rate, num_segments)
+    processed_dir = "./data/processed/edinburgh-noisy-speech-db/" + directory_name
     processed_filename = "train.pkl"
     clean_audio_dir = "clean_trainset_28spk_wav/"
     log_trainset = "log_trainset_28spk.txt"
@@ -104,13 +105,17 @@ def process_audio(process_all = False, window_length = 256, overlap = 0.75, samp
         f.close()
     print("processing finished")        
     
-    return dataset
+    return dataset, processed_dir, directory_name
 
 if __name__ == "__main__":
     process_all = False
+    upload = False
     try:
         process_all = sys.argv[1] == "all"
     except:
         process_all = False
 
-    process_audio(process_all = process_all)
+    dataset, processed_dir, key = process_audio(process_all = process_all)
+    
+    
+    
