@@ -49,6 +49,8 @@ def process_audio(process_all = False):
         audio_files.append(x.split()[0] + ".wav")
     f.close()
     
+
+    audio_files = audio_files[0:8192]
     if process_all == False:
         audio_files = audio_files[0:512]
         processed_filename = "train.bla.pkl"
