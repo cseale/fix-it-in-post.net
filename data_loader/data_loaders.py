@@ -24,7 +24,7 @@ class EdinburghDataset(Dataset):
         if getpass.getuser() == "ec2-user":
             d = downloadS3File()
         else:
-            d = useLocalFile()
+            d = useLocalFile(data_dir)
 
         # TODO: use transformer
         self.labels = torch.from_numpy(d["targets"])
@@ -41,8 +41,9 @@ class EdinburghDataset(Dataset):
         return len(self.labels)
 
 
-def useLocalFile():
-    data_dir = "./data/processed/edinburgh-noisy-speech-db/train.pkl"
+def useLocalFile(data_dir):
+    # data_dir = "./data/processed/edinburgh-noisy-speech-db/train.512.pkl"
+    print(data_dir)
     with open(data_dir, 'rb') as f:
         d = pickle.load(f)
     return d
