@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from base import BaseModel
@@ -49,7 +50,7 @@ class ConvolutionalBaseline(BaseModel):
         
         x = F.leaky_relu(self.fc1(x))
         # x = F.leaky_relu(self.fc1_bn(self.fc1(x)))
-        x = self.fc2(x)
+        x = torch.sigmoid(self.fc2(x))
         return x
 
 
@@ -83,5 +84,5 @@ class ConvolutionalBaseline_TimeFiltering(BaseModel):
         
         x = F.leaky_relu(self.fc1(x))
         # x = F.leaky_relu(self.fc1_bn(self.fc1(x)))
-        x = self.fc2(x)
+        x = torch.sigmoid(self.fc2(x))
         return x

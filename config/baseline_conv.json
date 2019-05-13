@@ -30,7 +30,7 @@
             "amsgrad": true
         }
     },
-    "loss": "squared_loss",
+    "loss": "binary_cross_entropy",
     "metrics": [],
     "lr_scheduler": {
         "type": "StepLR",
