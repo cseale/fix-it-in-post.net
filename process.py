@@ -31,7 +31,7 @@ def get_stft(y, orig_sr, window_length, overlap, target_sr):
     return D
 
 def get_directory_name(window_length, overlap, sampling_rate, num_segments):
-    name = "w" + str(window_length) + "o" + str(overlap) + "sr" + str(sampling_rate) + "n" + str(num_segments) + "/"
+    name = "w" + str(window_length) + "o" + str(overlap) + "sr" + str(sampling_rate) + "n" + str(num_segments) + "ibm/"
     name = name.replace("0.", "").replace(".0", "")
     return name
 
