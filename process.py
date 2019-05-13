@@ -8,7 +8,7 @@ import sys
 
 def get_stft(y, sr):
     # define vars
-    window_length = 1024
+    window_length = 128
     win = scipy.signal.hamming(window_length,"periodic")
     overlap = round(0.75 * window_length)
     fft_length = window_length
@@ -30,7 +30,7 @@ def get_stft(y, sr):
 def process_audio(process_all = False):
     raw_dir = "./data/raw/edinburgh-noisy-speech-db/"
     processed_dir = "./data/processed/edinburgh-noisy-speech-db/"
-    processed_filename = "train.pkl"
+    processed_filename = "train.256.pkl"
     clean_audio_dir = "clean_trainset_28spk_wav/"
     log_trainset = "log_trainset_28spk.txt"
     audio_files = []
@@ -51,7 +51,7 @@ def process_audio(process_all = False):
     
     if process_all == False:
         audio_files = audio_files[0:512]
-        processed_filename = "train.bla.pkl"
+        processed_filename = "train.128.pkl"
         
     print("Processing " + str(len(audio_files)) + " files")
     
