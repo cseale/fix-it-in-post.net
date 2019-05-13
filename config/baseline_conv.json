@@ -5,7 +5,7 @@
     "arch": {
         "type": "ConvolutionalBaseline",
         "args": {
-            "n_features": 513,
+            "n_features": 129,
             "n_segments": 8
         }
     },
