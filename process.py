@@ -83,14 +83,18 @@ def process_audio(process_all = False, window_length = 256, overlap = 0.75, samp
             magnitude = np.abs(D)
 
             #create noisy version
-            noise_amp = 0.15*np.random.uniform()*np.amax(y)
-            y_noise = y.astype('float64') + noise_amp * np.random.normal(size=y.shape[0])
+            noise_amp = 0.15 * np.random.uniform()*np.amax(y) * np.random.normal(size=y.shape[0])
+            N = np.abs(get_stft(noise_amp, sr, window_length, overlap, sampling_rate))
+            
+            M = 1 * (magnitude > N) # create IBM
+            
+            y_noise = y.astype('float64') + noise_amp 
             D_noise = get_stft(y_noise, sr, window_length, overlap, sampling_rate)
             magnitude_noise = np.abs(D_noise)
 
             for segment_index in range(magnitude.shape[1] - num_segments):
                 dataset["predictors"] = magnitude_noise[:, segment_index:segment_index + num_segments]
-                dataset["targets"] = magnitude[:,segment_index + num_segments]
+                dataset["targets"] = M[:,segment_index + num_segments]
                  
                 with open(processed_dir + "sample." + str(file_index) + ".pkl", 'wb') as handle:
                     pickle.dump(dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)

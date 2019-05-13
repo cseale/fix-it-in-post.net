@@ -3,7 +3,7 @@
     "n_gpu": 1,
     
     "arch": {
-        "type": "FullyConnectedBaseline",
+        "type": "FullyConnectedIBMBaseline",
         "args": {
             "n_features": 129,
             "n_segments": 8
@@ -18,7 +18,7 @@
             "num_workers": 2,
             "window_length": 256, 
             "overlap": 0.75, 
-            "sampling_rate": 8e3, 
+            "sampling_rate": 8000, 
             "num_segments": 8
         }
     },
@@ -30,7 +30,7 @@
             "amsgrad": true
         }
     },
-    "loss": "squared_loss",
+    "loss": "binary_cross_entropy",
     "metrics": [],
     "lr_scheduler": {
         "type": "StepLR",

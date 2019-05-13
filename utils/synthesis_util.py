@@ -37,16 +37,16 @@ def get_audio(audio_id, audio_files, resample=True):
 
 def transform_to_noisy(y):
     # you can take any distribution from https://docs.scipy.org/doc/numpy-1.13.0/reference/routines.random.html
-    noise_amp = 0.15 * np.random.uniform() * np.amax(y)
-    y_noise = y.astype('float64') + noise_amp * np.random.normal(size=y.shape[0])
+    noise_amp = 0.15 * np.random.uniform() * np.amax(y) * np.random.normal(size=y.shape[0])
+    y_noise = y.astype('float64') + noise_amp 
 
-    return y_noise
+    return y_noise, noise_amp
 
 
 def get_noisy_audio(audio_id, audio_files):
     y_noise, sr = get_audio(audio_id, audio_files)
-    y_noise = transform_to_noisy(y_noise)
-    return y_noise, sr
+    y_noise, noise = transform_to_noisy(y_noise)
+    return y_noise, sr, noise
 
 
 def resample_to_8k(audio, sr):
@@ -77,9 +77,10 @@ def get_predictors(magnitude, num_segments=8):
     return predictors
 
 
-def denoise_audio(model, sample, phase, window, length, num_segments=8, window_length=256, hop_length=64):
+def denoise_audio(model, sample, magnitude, phase, window, length, num_segments=8, window_length=256, hop_length=64):
     y_pred = model(sample)
     y_pred = y_pred.detach().numpy().transpose()
+    D_rec = y_pred * (1.0 * (magnitude[:, num_segments - 1:] > 0.5))
     D_rec = y_pred * phase[:, num_segments - 1:]
     audio_rec = librosa.istft(D_rec,
                               length=length,
