@@ -17,3 +17,4 @@ data/processed/**
 # editor stuff
 .idea/
 __pycache__/
+pesq_lib/
