@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from base import BaseModel
 
+
 class FullyConnectedBaseline(BaseModel):
     def __init__(self, n_features, n_segments):
         super(FullyConnectedBaseline, self).__init__()
@@ -35,10 +36,10 @@ class ConvolutionalBaseline(BaseModel):
 
     def forward(self, x):
         x = x.reshape(x.shape[0], 1, self.n_features, -1)
-        x = F.relu(self.conv1_bn(self.conv1(x)))
-        x = F.relu(self.conv2_bn(self.conv2(x)))
-        x = F.relu(self.conv3_bn(self.conv3(x)))
+        x = F.leaky_relu(self.conv1_bn(self.conv1(x)))
+        x = F.leaky_relu(self.conv2_bn(self.conv2(x)))
+        x = F.leaky_relu(self.conv3_bn(self.conv3(x)))
         x = x.view(-1, 40 * self.n_features)
-        x = F.relu(self.fc1_bn(self.fc1(x)))
+        x = F.leaky_relu(self.fc1_bn(self.fc1(x)))
         x = self.fc2(x)
         return x
