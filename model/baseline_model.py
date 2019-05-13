@@ -15,7 +15,7 @@ class FullyConnectedBaseline(BaseModel):
     def forward(self, x):
         x = F.relu(self.fc1_bn(self.fc1(x)))
         x = F.relu(self.fc2_bn(self.fc2(x)))
-        x = self.fc3(x)
+        x = torch.sigmoid(self.fc3(x))
         return x
 
 

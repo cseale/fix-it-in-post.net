@@ -3,7 +3,7 @@
     "n_gpu": 1,
     
     "arch": {
-        "type": "FullyConnectedIBMBaseline",
+        "type": "FullyConnectedBaseline",
         "args": {
             "n_features": 129,
             "n_segments": 8
