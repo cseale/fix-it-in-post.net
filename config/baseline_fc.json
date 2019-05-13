@@ -12,11 +12,14 @@
     "data_loader": {
         "type": "STFTDataLoader",
         "args":{
-            "data_dir": "data/processed/edinburgh-noisy-speech-db/train.128.pkl",
             "batch_size": 128,
             "shuffle": true,
             "validation_split": 0.1,
-            "num_workers": 2
+            "num_workers": 2,
+            "window_length": 256, 
+            "overlap": 0.75, 
+            "sampling_rate": 8e3, 
+            "num_segments": 8
         }
     },
     "optimizer": {
