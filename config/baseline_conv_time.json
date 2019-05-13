@@ -1,9 +1,9 @@
 {
-    "name": "Baseline_Convolutional",
+    "name": "Baseline_Convolutional_time_filtering",
     "n_gpu": 1,
     
     "arch": {
-        "type": "ConvolutionalBaseline",
+        "type": "ConvolutionalBaseline_TimeFiltering",
         "args": {
             "n_features": 129,
             "n_segments": 8
