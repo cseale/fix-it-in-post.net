@@ -25,3 +25,7 @@ If you have data processed locally, it would be good to store on S3 for others t
 python upload.py ./data/processed/edinburgh-noisy-speech-db/w256o75sr8000n8/
 ```
 This will store the data under the key `w256o75sr8000n8/sample.0.pkl` in the bucket `fix-it-in-post`
+
+## Testing samples
+We use *synthesis.ipynb* to check performance of certain model - by listening to clean, noisy ans denoised samples. 
+It is also possible to calculate SNR and PESQ for certain sample and also in aggregated manner. 
