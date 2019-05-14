@@ -34,7 +34,7 @@ class EdinburghDataset(Dataset):
         self.use_s3 = False
         if checkIfDataExistsOnLocal(self.data_dir):
             print("data is already processed...")
-        elif checkIfDataExistsOnS3(self.data_dir) or getpass.getuser() == "ec2-user":
+        elif checkIfDataExistsOnS3(self.data_dir):
             self.use_s3 = True
             print("data is on S3")
         else:
