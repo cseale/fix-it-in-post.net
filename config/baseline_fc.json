@@ -19,7 +19,8 @@
             "window_length": 256, 
             "overlap": 0.75, 
             "sampling_rate": 8e3, 
-            "num_segments": 8
+            "num_segments": 8,
+            "type": "fc"
         }
     },
     "optimizer": {
