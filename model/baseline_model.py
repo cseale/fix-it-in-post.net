@@ -100,7 +100,7 @@ class GRUModel(BaseModel):
 
         self.gru_cell = nn.GRUCell(n_features, self.hidden_dim, self.layer_dim)
 
-        self.fc = nn.Linear(1024, n_features)
+        self.fc = nn.Linear(128, n_features)
 
     def forward(self, x):
 
@@ -116,13 +116,13 @@ class GRUModel(BaseModel):
 
         outs = []
 
-        hn = h0[0, :, :]
+        hn = h0[0, :]
 
-        for seq in range(x.size(1)):
-            hn = self.gru_cell(x[:, seq, :], hn)
-            outs.append(hn)
 
-        out = outs[-1].squeeze()
+        hn = self.gru_cell(x, hn)
+
+
+        out = hn
 
         out = self.fc(out)
         # out.size() --> 100, 10
