@@ -31,7 +31,7 @@ def get_stft(y, orig_sr, window_length, overlap, target_sr):
     return D
 
 def get_directory_name(window_length, overlap, sampling_rate, num_segments):
-    name = "w" + str(window_length) + "o" + str(overlap) + "sr" + str(sampling_rate) + "n" + str(num_segments) + "/"
+    name = "w" + str(window_length) + "o" + str(overlap) + "sr" + str(sampling_rate) + "n" + str(num_segments) + "_symmetric/"
     name = name.replace("0.", "").replace(".0", "")
     return name
 
@@ -88,9 +88,9 @@ def process_audio(process_all = False, window_length = 256, overlap = 0.75, samp
             D_noise = get_stft(y_noise, sr, window_length, overlap, sampling_rate)
             magnitude_noise = np.abs(D_noise)
 
-            for segment_index in range(magnitude.shape[1] - num_segments):
-                dataset["predictors"] = magnitude_noise[:, segment_index:segment_index + num_segments]
-                dataset["targets"] = magnitude[:,segment_index + num_segments]
+            for segment_index in range(magnitude.shape[1] - 2 * num_segments - 1):
+                dataset["predictors"] = magnitude_noise[:, segment_index:segment_index + 2 * num_segments + 1]
+                dataset["targets"] = magnitude[:,segment_index + num_segments + 1]
                  
                 with open(processed_dir + "sample." + str(file_index) + ".pkl", 'wb') as handle:
                     pickle.dump(dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
