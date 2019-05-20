@@ -197,3 +197,49 @@ class GRUModel(BaseModel):
         out = self.fc(out)
         # out.size() --> 100, 10
         return out
+
+
+class baseLSTM(nn.Module):
+    def __init__(self, n_features, n_segments):
+        super(baseLSTM, self).__init__()
+        self.hidden_dim = 128
+        self.num_layers = 256
+
+        # Define the LSTM layer
+        self.lstm = nn.LSTM(n_features, self.hidden_dim, self.num_layers)
+
+        # Define the output layer
+        self.linear = nn.Linear(self.hidden_dim, n_features)
+
+    # def init_hidden(self):
+    #     # This is what we'll initialise our hidden state as
+    #     return (torch.zeros(self.num_layers, self.batch_size, self.hidden_dim),
+    #             torch.zeros(self.num_layers, self.batch_size, self.hidden_dim))
+
+    def forward(self, input):
+        # Forward pass through LSTM layer
+        # shape of lstm_out: [input_size, batch_size, hidden_dim]
+        # shape of self.hidden: (a, b), where a and b both
+        # have shape (num_layers, batch_size, hidden_dim).
+        # lstm_out, self.hidden = self.lstm(input.view(len(input), , -1))
+
+        if torch.cuda.is_available():
+            h0 = Variable(torch.zeros(self.hidden_dim, input.size(0), self.hidden_dim).cuda())
+        else:
+            h0 = Variable(torch.zeros(self.hidden_dim, input.size(0), self.hidden_dim))
+
+        hn = h0[0, :]
+
+        if torch.cuda.is_available():
+            c0 = Variable(torch.zeros(self.hidden_dim, input.size(0), self.hidden_dim).cuda())
+        else:
+            c0 = Variable(torch.zeros(self.hidden_dim, input.size(0), self.hidden_dim))
+
+        cn = c0[0, :]
+
+        # Only take the output from the final timetep
+        # Can pass on the entirety of lstm_out to the next layer if it is a seq2seq prediction
+        lstm_out = self.lstm(input,(h0,c0))
+        out = self.fc(lstm_out)
+
+        return out
