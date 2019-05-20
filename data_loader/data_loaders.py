@@ -5,7 +5,7 @@ import boto3
 import botocore
 import os
 import getpass
-from process import process_audio, get_directory_name 
+from process_rnn import process_audio, get_directory_name
 from torch.utils.data.dataset import Dataset  # For custom datasets
 
 EDINBURGH_DATA_DIR = "./data/processed/edinburgh-noisy-speech-db/"
@@ -44,15 +44,15 @@ class EdinburghDataset(Dataset):
         # read the amount of samples we have
         self.length = readLengthFile(self.data_dir, self.use_s3)
         num_features = int((window_length/2) + 1)
-        self.data = torch.zeros([self.length, num_features * num_segments])
-        self.labels = torch.zeros([self.length, num_features])
+        self.data = torch.zeros([self.length, num_features*num_segments])
+        self.labels = torch.zeros([self.length, num_features*num_segments])
 
     def __getitem__(self, index):
         # If all files have not been loaded, and the index being queried has not been loaded, then load the file
         if self.loaded_count != self.length and index not in self.loaded_indices:
             d = readSampleFile(self.data_dir, index, self.use_s3)
             self.data[index] = torch.from_numpy(d['predictors']).reshape(1, -1)
-            self.labels[index] = torch.from_numpy(d['targets'])
+            self.labels[index] = torch.from_numpy(d['targets']).reshape(1, -1)
             self.loaded_indices.append(index)
             self.loaded_count = self.loaded_count + 1
 

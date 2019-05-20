@@ -1,5 +1,7 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.autograd import Variable
 from base import BaseModel
 
 
@@ -85,3 +87,43 @@ class ConvolutionalBaseline_TimeFiltering(BaseModel):
         # x = F.leaky_relu(self.fc1_bn(self.fc1(x)))
         x = self.fc2(x)
         return x
+
+
+class GRUModel(BaseModel):
+    def __init__(self, n_features, n_segments):
+        super(GRUModel, self).__init__()
+        # Hidden dimensions
+        self.hidden_dim = 128
+
+        # Number of hidden layers
+        self.layer_dim = 256
+
+        self.gru_cell = nn.GRUCell(n_features, self.hidden_dim, self.layer_dim)
+
+        self.fc = nn.Linear(1024, n_features)
+
+    def forward(self, x):
+
+        # Initialize hidden state with zeros
+        #######################
+        #  USE GPU FOR MODEL  #
+        #######################
+        # print(x.shape,"x.shape")100, 28, 28
+        if torch.cuda.is_available():
+            h0 = Variable(torch.zeros(self.layer_dim, x.size(0), self.hidden_dim).cuda())
+        else:
+            h0 = Variable(torch.zeros(self.layer_dim, x.size(0), self.hidden_dim))
+
+        outs = []
+
+        hn = h0[0, :, :]
+
+        for seq in range(x.size(1)):
+            hn = self.gru_cell(x[:, seq, :], hn)
+            outs.append(hn)
+
+        out = outs[-1].squeeze()
+
+        out = self.fc(out)
+        # out.size() --> 100, 10
+        return out

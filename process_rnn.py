@@ -89,12 +89,13 @@ def process_audio(process_all=False, window_length=256, overlap=0.75, sampling_r
             D_noise = get_stft(y_noise, sr, window_length, overlap, sampling_rate)
             magnitude_noise = np.abs(D_noise)
 
-            dataset["predictors"] = magnitude_noise
-            dataset["targets"] = magnitude
+            for segment_index in range(0,magnitude.shape[1] - num_segments,num_segments):
+                dataset["predictors"] = magnitude_noise[:, segment_index:segment_index + num_segments]
+                dataset["targets"] = magnitude[:, segment_index:segment_index + num_segments]
 
-            with open(processed_dir + "sample." + str(file_index) + ".pkl", 'wb') as handle:
-                pickle.dump(dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            file_index = file_index + 1
+                with open(processed_dir + "sample." + str(file_index) + ".pkl", 'wb') as handle:
+                    pickle.dump(dataset, handle, protocol=pickle.HIGHEST_PROTOCOL)
+                file_index = file_index + 1
 
             bar.update(i)
 
