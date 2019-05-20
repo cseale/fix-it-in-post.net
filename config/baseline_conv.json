@@ -6,7 +6,7 @@
         "type": "ConvolutionalBaseline",
         "args": {
             "n_features": 129,
-            "n_segments": 8
+            "n_segments": 17
         }
     },
     "data_loader": {
