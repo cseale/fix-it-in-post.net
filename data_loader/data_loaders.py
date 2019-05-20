@@ -44,7 +44,7 @@ class EdinburghDataset(Dataset):
         # read the amount of samples we have
         self.length = readLengthFile(self.data_dir, self.use_s3)
         num_features = int((window_length/2) + 1)
-        self.data = torch.zeros([self.length, num_features * num_segments])
+        self.data = torch.zeros([self.length, num_features * (num_segments * 2 + 1)])
         self.labels = torch.zeros([self.length, num_features])
 
     def __getitem__(self, index):
