@@ -78,7 +78,8 @@ def process_audio(process_all = False, window_length = 256, overlap = 0.75, samp
                 "targets": None
             }
             # load file
-            y, sr = librosa.load(raw_dir + clean_audio_dir + f)
+            sr, y = scipy.io.wavfile.read(raw_dir + clean_audio_dir + f)
+            y = y.astype(np.float32)
             D = get_stft(y, sr, window_length, overlap, sampling_rate)
             magnitude = np.abs(D)
 

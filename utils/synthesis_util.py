@@ -2,6 +2,7 @@ import librosa.display
 import librosa.util
 import numpy as np
 import torch
+import scipy
 
 clean_audio_dir = "./data/raw/edinburgh-noisy-speech-db/clean_trainset_28spk_wav/"
 raw_dir = "./data/raw/edinburgh-noisy-speech-db/"
@@ -27,10 +28,10 @@ def get_clean_audio_file(audio_id, audio_files):
 
 def get_audio(audio_id, audio_files, resample=True):
     clean_audio_f = get_clean_audio_file(audio_id, audio_files)
-    y, sr = librosa.load(clean_audio_f)
+    sr, y = scipy.io.wavfile.read(clean_audio_f)
 
     if resample:
-        y, sr = resample_to_8k(y, sr)
+        y, sr = resample_to_8k(y.astype(np.float32), sr)
 
     return y, sr
 
