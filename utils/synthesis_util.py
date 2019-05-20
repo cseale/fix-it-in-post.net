@@ -37,13 +37,12 @@ def get_audio(audio_id, audio_files, resample=True):
 
 def transform_to_noisy(y, noise_factor):
     # you can take any distribution from https://docs.scipy.org/doc/numpy-1.13.0/reference/routines.random.html
-    noise_amp = noise_factor * np.random.uniform() * np.amax(y)
+    noise_amp = noise_factor * np.amax(y)
     y_noise = y.astype('float64') + noise_amp * np.random.normal(size=y.shape[0])
-
     return y_noise
 
 
-def get_noisy_audio(audio_id, audio_files, noise_factor=0.15):
+def get_noisy_audio(audio_id, audio_files, noise_factor=0.05):
     y_noise, sr = get_audio(audio_id, audio_files)
     y_noise = transform_to_noisy(y_noise, noise_factor)
     return y_noise, sr

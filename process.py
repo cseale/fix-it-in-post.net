@@ -83,7 +83,7 @@ def process_audio(process_all = False, window_length = 256, overlap = 0.75, samp
             magnitude = np.abs(D)
 
             #create noisy version
-            noise_amp = 0.15*np.random.uniform()*np.amax(y)
+            noise_amp = 0.05*np.amax(y)
             y_noise = y.astype('float64') + noise_amp * np.random.normal(size=y.shape[0])
             D_noise = get_stft(y_noise, sr, window_length, overlap, sampling_rate)
             magnitude_noise = np.abs(D_noise)
