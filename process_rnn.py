@@ -53,7 +53,6 @@ def process_audio(process_all=False, window_length=256, overlap=0.75, sampling_r
     log_trainset = "log_trainset_28spk.txt"
     audio_files = []
 
-
     # list files
     f = open(raw_dir + log_trainset, "r")
     for x in f:
@@ -84,12 +83,12 @@ def process_audio(process_all=False, window_length=256, overlap=0.75, sampling_r
             magnitude = np.abs(D)
 
             # create noisy version
-            noise_amp = 0.15 * np.random.uniform() * np.amax(y)
+            noise_amp = 0.05 * np.amax(y)
             y_noise = y.astype('float64') + noise_amp * np.random.normal(size=y.shape[0])
             D_noise = get_stft(y_noise, sr, window_length, overlap, sampling_rate)
             magnitude_noise = np.abs(D_noise)
 
-            for segment_index in range(0,magnitude.shape[1]):
+            for segment_index in range(magnitude.shape[1]):
                 dataset["predictors"] = magnitude_noise[:, segment_index]
                 dataset["targets"] = magnitude[:, segment_index]
 
