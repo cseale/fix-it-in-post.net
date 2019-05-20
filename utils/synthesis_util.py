@@ -75,11 +75,18 @@ def get_predictors(magnitude, num_segments=8):
 
     return predictors
 
+def get_predictors_rnn(magnitude, num_segments=8):
+    predictors = []
+    for segment_index in range(magnitude.shape[1]):
+        predictors.append(magnitude[:, segment_index])
+
+    return predictors
+
 
 def denoise_audio(model, sample, phase, window, length, num_segments=8, window_length=256, hop_length=64):
     y_pred = model(sample)
     y_pred = y_pred.detach().numpy().transpose()
-    D_rec = y_pred * phase[:, num_segments - 1:]
+    D_rec = y_pred * phase
     audio_rec = librosa.istft(D_rec,
                               length=length,
                               win_length=window_length,
