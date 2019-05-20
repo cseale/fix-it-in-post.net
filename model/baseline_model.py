@@ -206,7 +206,7 @@ class baseLSTM(nn.Module):
         self.num_layers = 256
 
         # Define the LSTM layer
-        self.lstm = nn.LSTM(n_features, self.hidden_dim, self.num_layers)
+        self.lstm = nn.LSTMCell(n_features, self.hidden_dim, self.num_layers)
 
         # Define the output layer
         self.linear = nn.Linear(self.hidden_dim, n_features)
@@ -239,7 +239,7 @@ class baseLSTM(nn.Module):
 
         # Only take the output from the final timetep
         # Can pass on the entirety of lstm_out to the next layer if it is a seq2seq prediction
-        lstm_out = self.lstm(input,(h0,c0))
-        out = self.fc(lstm_out)
+        hn,cn = self.lstm(input,(hn,cn))
+        out = self.linear(hn)
 
         return out
