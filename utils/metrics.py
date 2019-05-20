@@ -4,7 +4,7 @@ from numpy import array, where, median, abs
 
 from pesq_lib.pypesq import pypesq
 from utils.synthesis_util import *
-
+import random
 
 class Metrics:
     # used to get the spectral flux out of the stft of the signal (especially it is using the magnitude of the spectrum)
@@ -50,7 +50,9 @@ class Metrics:
         return 10 * np.log10(np.sum(m / sd))
 
     @staticmethod
-    def aggregate_metric_check(audio_files, model, limit=-1, window=scipy.signal.hamming(256, "periodic")):
+    def aggregate_metric_check(audio_files, model, indices, window=scipy.signal.hamming(256, "periodic")):
+        # indices must be generated outside this function to allow comparison of model against the same list of audio files
+        # for example, randomly sampling N ids
         snr_noise = []
         snr_clean = []
         snr_denoised = []
@@ -58,13 +60,13 @@ class Metrics:
         pesq_clean = []
         pesq_denoised = []
 
-        if limit == -1 or limit > len(audio_files):
-            limit = len(audio_files)
-
-        for i in range(limit):
+        for i, idx in enumerate(indices):
+            if i%10 == 0:
+                print(f"Computing... {i/len(indices)*100}%")
+                
             # obtain clean and noisy samples
-            y_clean, sr = get_audio(audio_id=i, audio_files=audio_files)
-            y_noise, sr = get_noisy_audio(audio_id=i, audio_files=audio_files)
+            y_clean, sr = get_audio(audio_id=idx, audio_files=audio_files)
+            y_noise, sr = get_noisy_audio(audio_id=idx, audio_files=audio_files)
 
             length = len(y_noise)
 
