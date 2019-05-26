@@ -53,5 +53,5 @@ class DeepFullyConnectedBaseline(BaseModel):
         x = F.leaky_relu(self.fc13_bn(self.fc13(x)))
         x = F.leaky_relu(self.fc14_bn(self.fc14(x)))
         x = F.leaky_relu(self.fc15_bn(self.fc15(x)))
-        x = self.fc16(x))
+        x = self.fc16(x)
         return x
