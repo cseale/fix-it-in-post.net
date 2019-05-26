@@ -1,7 +1,11 @@
+import random
+
 import librosa.display
 import librosa.util
 import numpy as np
 import torch
+
+from process import ALL_FILES
 
 clean_audio_dir = "./data/raw/edinburgh-noisy-speech-db/clean_trainset_28spk_wav/"
 raw_dir = "./data/raw/edinburgh-noisy-speech-db/"
@@ -17,6 +21,14 @@ def load_files():
     f.close()
 
     return audio_files
+
+
+def get_trainset_indices(N=10, limit=ALL_FILES):
+    return [random.randrange(0, ALL_FILES) for _ in range(N)]
+
+
+def get_testset_inidces(N=10, num_of_files=100):
+    return [random.randrange(ALL_FILES, ALL_FILES + num_of_files) for _ in range(N)]
 
 
 def get_clean_audio_file(audio_id, audio_files):
