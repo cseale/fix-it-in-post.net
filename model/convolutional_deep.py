@@ -4,9 +4,9 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from base import BaseModel
 
-class ConvolutionalBaseline(BaseModel):
+class ConvolutionalDeep(BaseModel):
     def __init__(self, n_features, n_segments):
-        super(ConvolutionalBaseline, self).__init__()
+        super(ConvolutionalDeep, self).__init__()
         self.n_features = n_features
         self.n_segments = n_segments
         self.conv1 = nn.Conv2d(1, 70, kernel_size=(9, 8), padding=(4, 0))
@@ -54,30 +54,6 @@ class ConvolutionalBaseline(BaseModel):
 
     def forward(self, x):
         x = x.reshape(x.shape[0], 1, self.n_features, -1)
-
-        """         x = F.leaky_relu(self.conv1(x))
-        x = F.leaky_relu(self.conv2(x))
-        x = F.leaky_relu(self.conv3(x))
-        x = F.leaky_relu(self.conv4(x))
-
-        x = F.leaky_relu(self.conv5(x))
-        x = F.leaky_relu(self.conv6(x))
-        x = F.leaky_relu(self.conv7(x))
-
-        x = F.leaky_relu(self.conv8(x))
-        x = F.leaky_relu(self.conv9(x))
-        x = F.leaky_relu(self.conv10(x))
-
-        x = F.leaky_relu(self.conv11(x))
-        x = F.leaky_relu(self.conv12(x))
-        x = F.leaky_relu(self.conv13(x))
-
-        x = F.leaky_relu(self.conv14(x))
-        x = F.leaky_relu(self.conv15(x)) 
-        
-        x = x.view(-1, 8 * self.n_features)
-        
-        x = F.leaky_relu(self.fc1(x)) """
 
         x = F.leaky_relu(self.conv1_bn(self.conv1(x)))
         x = F.leaky_relu(self.conv2_bn(self.conv2(x)))
