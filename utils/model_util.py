@@ -1,6 +1,8 @@
 import torch
-from model.baseline_model import FullyConnectedBaseline as fcnetwork, ConvolutionalBaseline_TimeFiltering as conv_time, ConvolutionalBaseline as conv, baseLSTM as lstm
-
+from model.fully_connected import FullyConnectedBaseline as fcnetwork
+from model.convolutional import ConvolutionalBaseline as conv
+from model.convolutional_timeline import ConvolutionalBaseline_TimeFiltering as conv_time
+from model.lstm import baseLSTM as lstm
 
 def load_model(n_features=129, n_segments=8, model_to_test="Baseline_FullyConnected/0505_130215", type="fc"):
     model = create_model(type, n_features, n_segments)

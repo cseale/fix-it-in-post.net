@@ -68,7 +68,7 @@ def audio_to_sttft(y_audio, win, hop_length=64, window_length=256):
     return magnitude, phase
 
 
-def get_predictors(magnitude, num_segments=8, type="rnn"):
+def get_predictors(magnitude, num_segments=8, type="conv"):
     predictors = []
     if type == "rnn":
         for segment_index in range(magnitude.shape[1]):
@@ -80,7 +80,7 @@ def get_predictors(magnitude, num_segments=8, type="rnn"):
     return predictors
 
 
-def denoise_audio(model, sample, phase, window, length, num_segments=8, window_length=256, hop_length=64, type="rnn"):
+def denoise_audio(model, sample, phase, window, length, num_segments=8, window_length=256, hop_length=64, type="conv"):
     y_pred = model(sample)
     y_pred = y_pred.detach().numpy().transpose()
 
