@@ -1,9 +1,9 @@
 {
-    "name": "Baseline_Convolutional_time_filtering",
+    "name": "Convolutional_shallow_time",
     "n_gpu": 1,
     
     "arch": {
-        "type": "ConvolutionalBaseline_TimeFiltering",
+        "type": "ConvolutionalShallow_Time",
         "args": {
             "n_features": 129,
             "n_segments": 8
