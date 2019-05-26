@@ -1,9 +1,9 @@
 {
-    "name": "Baseline_Convolutional_time_filtering",
+    "name": "Baseline_FullyConnected_Deep",
     "n_gpu": 1,
     
     "arch": {
-        "type": "ConvolutionalBaseline_TimeFiltering",
+        "type": "DeepFullyConnectedBaseline",
         "args": {
             "n_features": 129,
             "n_segments": 8
@@ -20,7 +20,7 @@
             "overlap": 0.75, 
             "sampling_rate": 8e3, 
             "num_segments": 8,
-            "type": "conv_time"
+            "type": "fc"
         }
     },
     "optimizer": {
