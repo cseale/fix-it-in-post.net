@@ -4,7 +4,6 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from base import BaseModel
 
-
 class FullyConnectedBaseline(BaseModel):
     def __init__(self, n_features, n_segments):
         super(FullyConnectedBaseline, self).__init__()
@@ -15,7 +14,8 @@ class FullyConnectedBaseline(BaseModel):
         self.fc3 = nn.Linear(1024, n_features)
 
     def forward(self, x):
-        x = F.relu(self.fc1_bn(self.fc1(x)))
-        x = F.relu(self.fc2_bn(self.fc2(x)))
+        x = F.leaky_relu(self.fc1_bn(self.fc1(x)))
+        x = F.leaky_relu(self.fc2_bn(self.fc2(x)))
         x = self.fc3(x)
         return x
+ 
