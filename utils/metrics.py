@@ -6,6 +6,7 @@ from pesq_lib.pypesq import pypesq
 from utils.synthesis_util import *
 import random
 
+
 class Metrics:
     # used to get the spectral flux out of the stft of the signal (especially it is using the magnitude of the spectrum)
     @staticmethod
@@ -50,7 +51,7 @@ class Metrics:
         return 10 * np.log10(np.sum(m / sd))
 
     @staticmethod
-    def aggregate_metric_check(audio_files, model, indices, window=scipy.signal.hamming(256, "periodic")):
+    def aggregate_metric_check(audio_files, model, indices, window=scipy.signal.hamming(256, "periodic"), type='conv'):
         # indices must be generated outside this function to allow comparison of model against the same list of audio files
         # for example, randomly sampling N ids
         snr_noise = []
@@ -61,9 +62,9 @@ class Metrics:
         pesq_denoised = []
 
         for i, idx in enumerate(indices):
-            if i%10 == 0:
-                print(f"Computing... {i/len(indices)*100}%")
-                
+            if i % 10 == 0:
+                print(f"Computing... {i / len(indices) * 100}%")
+
             # obtain clean and noisy samples
             y_clean, sr = get_audio(audio_id=idx, audio_files=audio_files)
             y_noise, sr = get_noisy_audio(audio_id=idx, audio_files=audio_files)
@@ -73,12 +74,12 @@ class Metrics:
             # Obtain sample
             win = window
             magnitude, phase = audio_to_sttft(y_noise, win)
-            predictors = get_predictors(magnitude)
+            predictors = get_predictors(magnitude, type=type)
             predictors = np.array(predictors)
             sample = obtain_sample(predictors)
 
             # denoise sample
-            audio_rec = denoise_audio(model, sample, phase, window, length)
+            audio_rec = denoise_audio(model, sample, phase, window, length, type=type)
 
             # calculate sttfts
             magnitude_clean, phase_clean = audio_to_sttft(y_clean, win)
@@ -95,8 +96,10 @@ class Metrics:
             pesq_noise.append(pypesq(sr, y_clean, y_noise, 'nb'))
             pesq_denoised.append(pypesq(sr, y_clean, audio_rec, 'nb'))
 
-        metrics = {"snr": {"clean": np.mean(snr_clean), "noise": np.mean(snr_noise), "denoised": np.mean(snr_denoised)},
-                   "pesq": {"clean": np.mean(pesq_clean), "noise": np.mean(pesq_noise),
-                            "denoised": np.mean(pesq_denoised)}}
+        metrics = {
+            "snr": {"clean": (np.mean(snr_clean), np.std(snr_clean)), "noise": (np.mean(snr_noise), np.std(snr_noise)),
+                    "denoised": (np.mean(snr_denoised), np.std(snr_denoised))},
+            "pesq": {"clean": (np.mean(pesq_clean), np.std(pesq_clean)),
+                     "noise": (np.mean(pesq_noise), np.std(pesq_noise)),
+                     "denoised": (np.mean(pesq_denoised), np.std(pesq_denoised))}}
         return metrics
-

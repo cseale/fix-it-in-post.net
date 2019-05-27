@@ -1,7 +1,11 @@
+import random
+
 import librosa.display
 import librosa.util
 import numpy as np
 import torch
+
+from process import ALL_FILES
 
 clean_audio_dir = "./data/raw/edinburgh-noisy-speech-db/clean_trainset_28spk_wav/"
 raw_dir = "./data/raw/edinburgh-noisy-speech-db/"
@@ -17,6 +21,14 @@ def load_files():
     f.close()
 
     return audio_files
+
+
+def get_trainset_indices(N=10, limit=ALL_FILES):
+    return [random.randrange(0, ALL_FILES) for _ in range(N)]
+
+
+def get_testset_inidces(N=10, num_of_files=100):
+    return [random.randrange(ALL_FILES, ALL_FILES + num_of_files) for _ in range(N)]
 
 
 def get_clean_audio_file(audio_id, audio_files):
@@ -68,7 +80,7 @@ def audio_to_sttft(y_audio, win, hop_length=64, window_length=256):
     return magnitude, phase
 
 
-def get_predictors(magnitude, num_segments=8, type="rnn"):
+def get_predictors(magnitude, num_segments=8, type="conv"):
     predictors = []
     if type == "rnn":
         for segment_index in range(magnitude.shape[1]):
@@ -80,7 +92,7 @@ def get_predictors(magnitude, num_segments=8, type="rnn"):
     return predictors
 
 
-def denoise_audio(model, sample, phase, window, length, num_segments=8, window_length=256, hop_length=64, type="rnn"):
+def denoise_audio(model, sample, phase, window, length, num_segments=8, window_length=256, hop_length=64, type="conv"):
     y_pred = model(sample)
     y_pred = y_pred.detach().numpy().transpose()
 
