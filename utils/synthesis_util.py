@@ -27,7 +27,7 @@ def get_trainset_indices(N=10, limit=ALL_FILES):
     return [random.randrange(0, ALL_FILES) for _ in range(N)]
 
 
-def get_testset_inidces(N=10, num_of_files=100):
+def get_testset_indices(N=10, num_of_files=100):
     return [random.randrange(ALL_FILES, ALL_FILES + num_of_files) for _ in range(N)]
 
 
