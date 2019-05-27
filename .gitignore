@@ -18,3 +18,5 @@ data/processed/**
 .idea/
 __pycache__/
 pesq_lib/
+
+reports/milestone_update/FullyConnected_deep/
