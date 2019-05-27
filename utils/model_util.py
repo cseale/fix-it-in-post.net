@@ -41,7 +41,7 @@ def create_fc_model(n_features, n_segments):
 
 
 def create_fc_deep_model(n_features, n_segments):
-    return fcnetwork(n_features=n_features, n_segments=n_segments)
+    return fcdnetwork(n_features=n_features, n_segments=n_segments)
 
 
 def create_conv_shallow_time_model(n_features, n_segments):
