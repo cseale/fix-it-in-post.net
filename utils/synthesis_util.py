@@ -30,7 +30,7 @@ def get_trainset_indices(N=10, limit=ALL_FILES):
 def get_testset_indices(N=10, num_of_files=100):
     return [random.randrange(ALL_FILES, ALL_FILES + num_of_files) for _ in range(N)]
 
-def get_testset_indices_gab(num_of_files):
+def get_testset_indices_gab(num_of_files, seed=123):
     total_num_of_files = len(load_files())
     num_of_possible_test_files = total_num_of_files - ALL_FILES
     if num_of_files > num_of_possible_test_files:
@@ -38,6 +38,7 @@ def get_testset_indices_gab(num_of_files):
         print("Requested more test files than present. Returning maximum number of possible test files.")
     
     possible_indices = list(range(ALL_FILES, ALL_FILES + num_of_possible_test_files))
+    random.seed(seed)
     random.shuffle(possible_indices)
     return possible_indices[:num_of_files]
 
