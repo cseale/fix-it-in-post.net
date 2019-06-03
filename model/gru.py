@@ -10,10 +10,7 @@ class GRUModel(BaseModel):
         # Hidden dimensions
         self.hidden_dim = 128
 
-        # Number of hidden layers
-        self.layer_dim = 256
-
-        self.gru_cell = nn.GRUCell(n_features, self.hidden_dim, self.layer_dim)
+        self.gru_cell = nn.GRUCell(n_features, self.hidden_dim)
 
         self.fc = nn.Linear(128, n_features)
 
