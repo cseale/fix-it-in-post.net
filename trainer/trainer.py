@@ -69,6 +69,7 @@ class Trainer(BaseTrainer):
                     self.data_loader.n_samples,
                     100.0 * batch_idx / len(self.data_loader),
                     loss.item()))
+                print("here...")
                 self.writer.add_image('input', make_grid(data.cpu(), nrow=8, normalize=True))
 
         log = {

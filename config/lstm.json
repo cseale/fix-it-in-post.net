@@ -6,13 +6,13 @@
         "type": "BieberLSTM",
         "args": {
             "n_features": 129,
-            "batch_size": 32
+            "batch_size": 16
         }
     },
     "data_loader": {
         "type": "STFTDataLoader",
         "args":{
-            "batch_size": 32,
+            "batch_size": 16,
             "shuffle": true,
             "validation_split": 0.1,
             "num_workers": 2,

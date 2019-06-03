@@ -59,8 +59,8 @@ class EdinburghDataset(Dataset):
         self.length = readLengthFile(self.data_dir, self.use_s3)
         num_features = int((window_length / 2) + 1)
         if type == "rnn":
-            self.data = torch.zeros([self.length, num_features, num_segments])
-            self.labels = torch.zeros([self.length, num_features, num_segments ]) 
+            self.data = torch.zeros([self.length, num_segments, num_features])
+            self.labels = torch.zeros([self.length, num_segments, num_features ]) 
         else:
             self.data = torch.zeros([self.length, num_features*num_segments])
             self.labels = torch.zeros([self.length, num_features])        
@@ -71,11 +71,12 @@ class EdinburghDataset(Dataset):
             d = readSampleFile(self.data_dir, index, self.use_s3)
 
             if self.type == "rnn":
-                self.data[index] = torch.from_numpy(d['predictors'])
+                self.data[index] = torch.from_numpy(d['predictors'].T)
+                self.labels[index] = torch.from_numpy(d['targets'].T)
             else:
                 self.data[index] = torch.from_numpy(d['predictors']).reshape(1, -1)
-
-            self.labels[index] = torch.from_numpy(d['targets'])
+                self.labels[index] = torch.from_numpy(d['targets'])
+            
             self.loaded_indices.append(index)
             self.loaded_count = self.loaded_count + 1
 

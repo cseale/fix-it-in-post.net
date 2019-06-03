@@ -118,7 +118,6 @@ def process_audio(process_all=False, window_length=256, overlap=0.75, sampling_r
             D_noise = get_stft(y_noise, sr, window_length, overlap, sampling_rate)
             D_noise = np.abs(D_noise)
             magnitude_noise = pad_magnitude(D_noise, max_lenght)
-
             dataset["predictors"] = magnitude_noise
             dataset["targets"] = magnitude
 
