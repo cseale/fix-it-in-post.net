@@ -1,7 +1,11 @@
+import random
+
 import librosa.display
 import librosa.util
 import numpy as np
 import torch
+
+from process import ALL_FILES
 
 clean_audio_dir = "./data/raw/edinburgh-noisy-speech-db/clean_trainset_28spk_wav/"
 raw_dir = "./data/raw/edinburgh-noisy-speech-db/"
@@ -18,6 +22,25 @@ def load_files():
 
     return audio_files
 
+
+def get_trainset_indices(N=10, limit=ALL_FILES):
+    return [random.randrange(0, ALL_FILES) for _ in range(N)]
+
+
+def get_testset_indices(N=10, num_of_files=100):
+    return [random.randrange(ALL_FILES, ALL_FILES + num_of_files) for _ in range(N)]
+
+def get_testset_indices_gab(num_of_files, seed=9001):
+    total_num_of_files = len(load_files())
+    num_of_possible_test_files = total_num_of_files - ALL_FILES
+    if num_of_files > num_of_possible_test_files:
+        num_of_files = num_of_possible_test_files
+        print("Requested more test files than present. Returning maximum number of possible test files.")
+    
+    possible_indices = list(range(ALL_FILES, ALL_FILES + num_of_possible_test_files))
+    random.seed(seed)
+    random.shuffle(possible_indices)
+    return possible_indices[:num_of_files]
 
 def get_clean_audio_file(audio_id, audio_files):
     audio_file = audio_files[audio_id]
@@ -43,7 +66,7 @@ def transform_to_noisy(y, noise_factor):
     return y_noise, noise_amp
 
 
-def get_noisy_audio(audio_id, audio_files, noise_factor=0.15):
+def get_noisy_audio(audio_id, audio_files, noise_factor=0.05):
     y_noise, sr = get_audio(audio_id, audio_files)
     y_noise, noise = transform_to_noisy(y_noise, noise_factor)
     return y_noise, sr, noise
@@ -69,19 +92,28 @@ def audio_to_sttft(y_audio, win, hop_length=64, window_length=256):
     return magnitude, phase
 
 
-def get_predictors(magnitude, num_segments=8):
+def get_predictors(magnitude, num_segments=8, type="conv"):
     predictors = []
-    for segment_index in range(magnitude.shape[1] - num_segments + 1):
-        predictors.append(magnitude[:, segment_index:segment_index + num_segments])
+    if type == "rnn":
+        for segment_index in range(magnitude.shape[1]):
+            predictors.append(magnitude[:, segment_index])
+    else:
+        for segment_index in range(magnitude.shape[1] - num_segments + 1):
+            predictors.append(magnitude[:, segment_index:segment_index + num_segments])
 
     return predictors
 
 
-def denoise_audio(model, sample, magnitude, phase, window, length, num_segments=8, window_length=256, hop_length=64):
+
+def denoise_audio(model, sample, magnitude, phase, window, length, num_segments=8, window_length=256, hop_length=64, type="conv"):
     y_pred = model(sample)
     y_pred = y_pred.detach().numpy().transpose()
     D_rec = y_pred * (1.0 * (magnitude[:, num_segments - 1:] > 0.5))
-    D_rec = y_pred * phase[:, num_segments - 1:]
+    if type == "rnn":
+        D_rec = y_pred * phase
+    else:
+        D_rec = y_pred * phase[:, num_segments - 1:]
+
     audio_rec = librosa.istft(D_rec,
                               length=length,
                               win_length=window_length,
