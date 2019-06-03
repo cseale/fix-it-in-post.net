@@ -59,11 +59,11 @@ class EdinburghDataset(Dataset):
         self.length = readLengthFile(self.data_dir, self.use_s3)
         num_features = int((window_length / 2) + 1)
         if type == "rnn":
-            self.data = torch.zeros([self.length, num_features])
+            self.data = torch.zeros([self.length, num_features, num_segments])
+            self.labels = torch.zeros([self.length, num_features, num_segments ]) 
         else:
             self.data = torch.zeros([self.length, num_features*num_segments])
-
-        self.labels = torch.zeros([self.length, num_features])
+            self.labels = torch.zeros([self.length, num_features])        
 
     def __getitem__(self, index):
         # If all files have not been loaded, and the index being queried has not been loaded, then load the file
