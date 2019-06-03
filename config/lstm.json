@@ -3,16 +3,16 @@
     "n_gpu": 1,
 
     "arch": {
-        "type": "baseLSTM",
+        "type": "BieberLSTM",
         "args": {
             "n_features": 129,
-            "n_segments": 8
+            "batch_size": 16
         }
     },
     "data_loader": {
         "type": "STFTDataLoader",
         "args":{
-            "batch_size": 128,
+            "batch_size": 16,
             "shuffle": true,
             "validation_split": 0.1,
             "num_workers": 2,
