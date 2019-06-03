@@ -5,7 +5,7 @@ from torch.autograd import Variable
 from base import BaseModel
 
 class baseLSTM(nn.Module):
-    def __init__(self, n_features, n_segments, use_cuda = False):
+    def __init__(self, n_features, n_segments, use_cuda = True):
         super(baseLSTM, self).__init__()
         self.hidden_dim = 128
         self.num_layers = 256
