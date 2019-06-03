@@ -5,10 +5,11 @@ from torch.autograd import Variable
 from base import BaseModel
 
 class baseLSTM(nn.Module):
-    def __init__(self, n_features, n_segments):
+    def __init__(self, n_features, n_segments, use_cuda = False):
         super(baseLSTM, self).__init__()
         self.hidden_dim = 128
         self.num_layers = 256
+        self.use_cuda = use_cuda
 
         # Define the LSTM layer
         self.lstm = nn.LSTMCell(n_features, self.hidden_dim, self.num_layers)
@@ -18,14 +19,14 @@ class baseLSTM(nn.Module):
 
     def forward(self, x):
 
-        if torch.cuda.is_available():
+        if self.use_cuda and torch.cuda.is_available():
             h0 = Variable(torch.zeros(self.hidden_dim, x.size(0), self.hidden_dim).cuda())
         else:
             h0 = Variable(torch.zeros(self.hidden_dim, x.size(0), self.hidden_dim))
 
         hn = h0[0, :]
 
-        if torch.cuda.is_available():
+        if self.use_cuda and torch.cuda.is_available():
             c0 = Variable(torch.zeros(self.hidden_dim, x.size(0), self.hidden_dim).cuda())
         else:
             c0 = Variable(torch.zeros(self.hidden_dim, x.size(0), self.hidden_dim))

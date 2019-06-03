@@ -12,7 +12,6 @@ def load_model(n_features=129, n_segments=8, model_to_test="Baseline_FullyConnec
     model = create_model(type, n_features, n_segments)
     model_path = model_to_test + "/model_best.pth"
     model.load_state_dict(torch.load(model_path, map_location='cpu')['state_dict'])
-
     return model
 
 
@@ -61,4 +60,4 @@ def create_conv_deep_model(n_features, n_segments):
 
 
 def create_lstm_model(n_features, n_segments):
-    return lstm(n_features=n_features, n_segments=n_segments)
+    return lstm(n_features=n_features, n_segments=n_segments, use_cuda=False)

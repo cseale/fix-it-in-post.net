@@ -67,7 +67,7 @@ class Metrics:
 
             # obtain clean and noisy samples
             y_clean, sr = get_audio(audio_id=idx, audio_files=audio_files)
-            y_noise, sr = get_noisy_audio(audio_id=idx, audio_files=audio_files)
+            y_noise, sr, noise = get_noisy_audio(audio_id=idx, audio_files=audio_files)
 
             length = len(y_noise)
 

@@ -105,14 +105,15 @@ def get_predictors(magnitude, num_segments=8, type="conv"):
 
 
 
-def denoise_audio(model, sample, magnitude, phase, window, length, num_segments=8, window_length=256, hop_length=64, type="conv"):
+def denoise_audio(model, sample, phase, window, length, num_segments=8, window_length=256, hop_length=64, type="conv"):
     y_pred = model(sample)
     y_pred = y_pred.detach().numpy().transpose()
-    D_rec = y_pred * (1.0 * (magnitude[:, num_segments - 1:] > 0.5))
+#     D_rec = sample.detach().numpy().transpose() * (1.0 * (y_pred > 0.5))
+    D_rec = sample.detach().numpy().transpose() * y_pred
     if type == "rnn":
-        D_rec = y_pred * phase
+        D_rec = D_rec * phase
     else:
-        D_rec = y_pred * phase[:, num_segments - 1:]
+        D_rec = D_rec * phase[:, num_segments - 1:]
 
     audio_rec = librosa.istft(D_rec,
                               length=length,
