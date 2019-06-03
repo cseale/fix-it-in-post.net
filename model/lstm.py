@@ -8,10 +8,10 @@ class baseLSTM(nn.Module):
     def __init__(self, n_features, n_segments):
         super(baseLSTM, self).__init__()
         self.hidden_dim = 128
-        self.num_layers = 256
 
         # Define the LSTM layer
-        self.lstm = nn.LSTMCell(n_features, self.hidden_dim, self.num_layers)
+        self.lstm = nn.LSTMCell(n_features, self.hidden_dim)
+        print(self.lstm.bias)
 
         # Define the output layer
         self.linear = nn.Linear(self.hidden_dim, n_features)
@@ -31,7 +31,7 @@ class baseLSTM(nn.Module):
             c0 = Variable(torch.zeros(self.hidden_dim, x.size(0), self.hidden_dim))
 
         cn = c0[0, :]
-
+        print(x.size())
         hn, cn = self.lstm(x, (hn, cn))
         out = self.linear(hn)
 
