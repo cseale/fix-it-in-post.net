@@ -46,15 +46,14 @@ class BieberLSTM(nn.Module):
 
         # TODO: This is a hack and should be made variable. The problem is that the unpacking returns the variable to the length of the longest sequence.
         # Maybe try this fix: https://github.com/pytorch/pytorch/issues/1591
-        total_length=435 
-
+        total_length=X.shape[1] 
         # ---------------------
         # 2. Run through RNN
         # TRICK 2 ********************************
         # Dim transformation: (batch_size, seq_len, embedding_dim) -> (batch_size, seq_len, nb_lstm_units)
 
         # pack_padded_sequence so that padded items in the sequence won't be shown to the LSTM
-        X_lengths = (X[:,:,0].cpu().numpy() == 0).argmax(1)
+        X_lengths = (X[:,:,0].cpu().numpy() == -1).argmax(1)
         # TODO: Hack 1, if sequence has max length, length needs to be set to total length
         # check if equal to zero, convert to binary, multiply by total length, add to original lengths
         X_lengths = ((X_lengths == 0) * 1) * total_length + X_lengths
@@ -76,6 +75,5 @@ class BieberLSTM(nn.Module):
         X = self.linear(X)
         # I like to reshape for mental sanity so we're back to (batch_size, seq_len, nb_tags)
         X = X.view(batch_size, seq_len, self.n_features)
-
         Y_hat = X
         return Y_hat

@@ -55,8 +55,8 @@ def get_longest_audio_name(audio_files, window_length=256, overlap=0.75, samplin
 
 def pad_magnitude(magnitude, max_length):
     to_ret = np.zeros((max_length))
+    to_ret-= 1
     to_ret[:magnitude.shape[0], :magnitude.shape[1]] = magnitude
-    to_ret[magnitude.shape[0]:, magnitude.shape[1]:] = PADDING_VALUE
 
     return to_ret
 
