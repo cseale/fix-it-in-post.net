@@ -61,4 +61,4 @@ def create_conv_deep_model(n_features, n_segments):
 
 
 def create_lstm_model(n_features):
-    return lstm(n_features=n_features, batch_size = 4)
+    return lstm(n_features=n_features, batch_size = 4, use_cuda=False)

@@ -5,8 +5,9 @@ from torch.autograd import Variable
 from base import BaseModel
     
 class BieberLSTM(nn.Module):
-    def __init__(self, n_features, batch_size):
+    def __init__(self, n_features, batch_size, use_cuda = True):
         super(BieberLSTM, self).__init__()
+        self.use_cuda = use_cuda
         self.nb_lstm_layers = 256
         self.nb_lstm_units = 128
         self.n_features = n_features
@@ -28,7 +29,7 @@ class BieberLSTM(nn.Module):
         h0 = torch.randn(self.nb_lstm_layers, self.batch_size, self.nb_lstm_units)
         c0 = torch.randn(self.nb_lstm_layers, self.batch_size, self.nb_lstm_units)
 
-        if torch.cuda.is_available():
+        if self.use_cuda and torch.cuda.is_available():
             h0 = h0.cuda()
             c0 = c0.cuda()
 

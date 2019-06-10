@@ -108,7 +108,7 @@ def denoise_audio(model, sample, phase, window, length, num_segments=8, window_l
     y_pred = y_pred.detach().numpy().transpose()
 
     if type == "rnn":
-        D_rec = y_pred * phase
+        D_rec = y_pred[:,:,0] * phase
     else:
         D_rec = y_pred * phase[:, num_segments - 1:]
 
