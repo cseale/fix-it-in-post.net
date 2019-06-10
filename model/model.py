@@ -9,4 +9,5 @@ from model.convolutional_shallow import *
 from model.convolutional_shallow_time import *
 from model.gru import *
 from model.lstm import *
+from model.lstm_v2 import *
 

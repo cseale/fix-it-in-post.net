@@ -5,7 +5,7 @@ import boto3
 import botocore
 import os
 import getpass
-import process_rnn as rnnpr
+import process_rnn2 as rnnpr
 import process as pr
 
 from torch.utils.data.dataset import Dataset  # For custom datasets

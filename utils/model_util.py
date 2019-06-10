@@ -5,7 +5,7 @@ from model.convolutional_shallow import ConvolutionalShallow as convsh
 from model.convolutional_deep import ConvolutionalDeep as convd
 from model.convolutional_deep_time import ConvolutionalDeep_Time as convd_time
 from model.convolutional_shallow_time import ConvolutionalShallow_Time as convsh_time
-from model.lstm import BieberLSTM as lstm
+from model.lstm_v2 import LSTMModel as lstm
 
 
 def load_model(n_features=129, n_segments=8, model_to_test="Baseline_FullyConnected/0505_130215", type="fc"):

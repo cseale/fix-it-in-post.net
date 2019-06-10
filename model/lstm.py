@@ -3,9 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 from base import BaseModel
-    
+
+
 class BieberLSTM(nn.Module):
-    def __init__(self, n_features, batch_size, use_cuda = True):
+    def __init__(self, n_features, batch_size, use_cuda=True):
         super(BieberLSTM, self).__init__()
         self.use_cuda = use_cuda
         self.nb_lstm_layers = 256
@@ -23,7 +24,7 @@ class BieberLSTM(nn.Module):
 
         # output layer which projects back to tag space
         self.linear = nn.Linear(self.nb_lstm_units, self.n_features)
-        
+
     def init_hidden(self):
         # the weights are of the form (nb_layers, batch_size, nb_lstm_units)
         h0 = torch.randn(self.nb_lstm_layers, self.batch_size, self.nb_lstm_units)
@@ -47,21 +48,23 @@ class BieberLSTM(nn.Module):
 
         # TODO: This is a hack and should be made variable. The problem is that the unpacking returns the variable to the length of the longest sequence.
         # Maybe try this fix: https://github.com/pytorch/pytorch/issues/1591
-        total_length=X.shape[1] 
+        total_length = X.shape[1]
         # ---------------------
         # 2. Run through RNN
         # TRICK 2 ********************************
         # Dim transformation: (batch_size, seq_len, embedding_dim) -> (batch_size, seq_len, nb_lstm_units)
 
         # pack_padded_sequence so that padded items in the sequence won't be shown to the LSTM
-        X_lengths = (X[:,:,0].cpu().numpy() == -1).argmax(1)
+        X_lengths = (X[:, :, 0].cpu().numpy() == -1).argmax(1)
         # TODO: Hack 1, if sequence has max length, length needs to be set to total length
         # check if equal to zero, convert to binary, multiply by total length, add to original lengths
         X_lengths = ((X_lengths == 0) * 1) * total_length + X_lengths
-
+        print(X_lengths)
         X = torch.nn.utils.rnn.pack_padded_sequence(X, X_lengths, batch_first=True, enforce_sorted=False)
         # now run through LSTM
-        X, self.hidden = self.lstm(X, self.hidden)
+
+        X, cn = self.lstm(X, self.hidden)
+        self.hidden = (X, cn)
         # undo the packing operation
         # TODO: Hack 2, set total_length manually
         X, _ = torch.nn.utils.rnn.pad_packed_sequence(X, batch_first=True, total_length=total_length)
