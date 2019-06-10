@@ -63,7 +63,7 @@ def pad_magnitude(magnitude, max_length):
 def get_audio_file_path(audio_file_name):
     return raw_dir + clean_audio_dir + audio_file_name
 
-def process_audio(process_all=False, window_length=256, overlap=0.75, sampling_rate=8e3, num_segments=435):
+def process_audio(process_all=False, window_length=256, overlap=0.75, sampling_rate=8e3, num_segments=631):
     print("Processing Audio...")
     print("window_length = " + str(window_length))
     print("overlap = " + str(overlap))

@@ -16,7 +16,7 @@ def padded_loss(output, target):
     X_lengths = (target[:,:,0].cpu().detach().numpy() == -1).argmax(1)
 
     mse_sum = 0
-    batch_size = output.shape[0]
+    batch_size = target.shape[0]
     # loop over batch size
     for i in range(batch_size):
         y = target[i, :X_lengths[i], :]
