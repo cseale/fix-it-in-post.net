@@ -8,8 +8,8 @@ class BieberLSTM(nn.Module):
     def __init__(self, n_features, batch_size, use_cuda = True):
         super(BieberLSTM, self).__init__()
         self.use_cuda = use_cuda
-        self.nb_lstm_layers = 256
-        self.nb_lstm_units = 128
+        self.nb_lstm_layers = 1
+        self.nb_lstm_units = 512
         self.n_features = n_features
         self.batch_size = batch_size
 
@@ -26,8 +26,8 @@ class BieberLSTM(nn.Module):
         
     def init_hidden(self):
         # the weights are of the form (nb_layers, batch_size, nb_lstm_units)
-        h0 = torch.randn(self.nb_lstm_layers, self.batch_size, self.nb_lstm_units)
-        c0 = torch.randn(self.nb_lstm_layers, self.batch_size, self.nb_lstm_units)
+        h0 = torch.zeros(self.nb_lstm_layers, self.batch_size, self.nb_lstm_units)
+        c0 = torch.zeros(self.nb_lstm_layers, self.batch_size, self.nb_lstm_units)
 
         if self.use_cuda and torch.cuda.is_available():
             h0 = h0.cuda()
@@ -74,7 +74,7 @@ class BieberLSTM(nn.Module):
         X = X.view(-1, X.shape[2])
         # run through actual linear layer
         X = self.linear(X)
-        # I like to reshape for mental sanity so we're back to (batch_size, seq_len, nb_tags)
+
         X = X.view(batch_size, seq_len, self.n_features)
         Y_hat = X
         return Y_hat

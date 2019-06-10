@@ -13,13 +13,13 @@ def padded_loss(output, target):
     target dimensions: batch x N x 129, where N <= M
     The loss must NOT be computed on entries corresponding to indices which are greater than N
     """
-    X_lengths = (output[:,:,0].cpu().detach().numpy() == -1).argmax(1)
+    X_lengths = (target[:,:,0].cpu().detach().numpy() == -1).argmax(1)
     mse_sum = 0
-    batch_size = output.shape[0]
+    batch_size = target.shape[0]
     # loop over batch size
     for i in range(batch_size):
-        y = target[i, X_lengths[i], :]
-        y_hat = output[i, X_lengths[i], :]
+        y = target[i, :X_lengths[i], :]
+        y_hat = output[i, :X_lengths[i], :]
         mse_sum += F.mse_loss(y, y_hat)
 
     return mse_sum / batch_size 

@@ -19,7 +19,7 @@
             "window_length": 256,
             "overlap": 0.75,
             "sampling_rate": 8e3,
-            "num_segments": 435,
+            "num_segments": 631,
             "type": "rnn"
         }
     },
