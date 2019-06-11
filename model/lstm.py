@@ -59,12 +59,9 @@ class BieberLSTM(nn.Module):
         # TODO: Hack 1, if sequence has max length, length needs to be set to total length
         # check if equal to zero, convert to binary, multiply by total length, add to original lengths
         X_lengths = ((X_lengths == 0) * 1) * total_length + X_lengths
-        print(X_lengths)
         X = torch.nn.utils.rnn.pack_padded_sequence(X, X_lengths, batch_first=True, enforce_sorted=False)
         # now run through LSTM
-
-        X, cn = self.lstm(X, self.hidden)
-        self.hidden = (X, cn)
+        X, self.hidden = self.lstm(X, self.hidden)
         # undo the packing operation
         # TODO: Hack 2, set total_length manually
         X, _ = torch.nn.utils.rnn.pad_packed_sequence(X, batch_first=True, total_length=total_length)
